@@ -22,6 +22,9 @@ class HashTable:
 
     def __init__(self, capacity):
         # Your code here
+        self.capacity = capacity
+        self.size = 0
+        self.buckets = [None] * capacity
 
 
     def get_num_slots(self):
@@ -35,7 +38,7 @@ class HashTable:
         Implement this.
         """
         # Your code here
-
+        return len(self.buckets)
 
     def get_load_factor(self):
         """
@@ -54,6 +57,20 @@ class HashTable:
         """
 
         # Your code here
+        FNV_prime = 1099511628211
+        offset_basis = 14695981039346656037
+
+        # hash = offset_basis
+        # for each octet_of_data to be hashed
+        #     hash = hash * FNV_prime
+        #     hash = hash xor octet_of_data
+        # return hash
+        hash = offset_basis
+        for char in key:
+            hash = hash * FNV_prime
+            hash = hash ^ ord(char)
+
+        return hash
 
 
     def djb2(self, key):
@@ -63,7 +80,7 @@ class HashTable:
         Implement this, and/or FNV-1.
         """
         # Your code here
-
+        pass
 
     def hash_index(self, key):
         """
@@ -71,7 +88,7 @@ class HashTable:
         between within the storage capacity of the hash table.
         """
         #return self.fnv1(key) % self.capacity
-        return self.djb2(key) % self.capacity
+        return self.fnv1(key) % self.capacity
 
     def put(self, key, value):
         """
@@ -82,6 +99,8 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        hash_index = self.hash_index(key)
+        self.buckets[hash_index] = HashTableEntry(key, value)
 
 
     def delete(self, key):
@@ -93,6 +112,11 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        hash_index = self.hash_index(key)
+        if self.buckets[hash_index]:
+            self.buckets[hash_index] = None
+        else:
+            print("These aren't the keys you're looking for")
 
 
     def get(self, key):
@@ -104,6 +128,12 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        hash_index = self.hash_index(key)
+        if self.buckets[hash_index]:
+            return self.buckets[hash_index].value
+        else:
+            print("These aren't the keys you're looking for")
+
 
 
     def resize(self, new_capacity):
